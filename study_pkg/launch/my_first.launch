@@ -1,0 +1,12 @@
+<launch>
+    <arg name="new_topic_name" default="new_chatter" />
+    <include file="$(find study_pkg)/launch/cpp.launch">
+        <arg name="hoge" value="$(arg new_topic_name)"/>
+    </include>
+        <node name="receiver" pkg="study_pkg" type="listener.py" output="screen">
+           <remap from="my_topic" to="$(arg new_topic_name)"/>
+        </node>
+        <node name="sender" pkg="study_pkg" type="talker.py" output="screen">
+            <remap from="my_topic" to="my_topic"/>
+        </node>
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+	<group ns="Podschetiki">
+        	<node name="polynomcheeek" pkg="study_pkg" type="polynomchek.py" output="screen"/>
+        	<node name="summm" pkg="study_pkg" type="sum.py" output="screen"/>
+        </group>
+</launch>

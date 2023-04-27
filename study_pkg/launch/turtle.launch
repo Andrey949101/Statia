@@ -1,0 +1,14 @@
+<launch>
+<node name="simulator" pkg="turtlesim" type="turtlesim_node" output="screen"/>
+<node name="keyboard" pkg="turtlesim" type="turtle_teleop_key" output="screen"/>
+<node name="turtle1_tf_broadcaster" pkg="study_pkg" type="turtle_tf_broadcaster.py" respawn="false" output="screen">
+<remap from="input_pose" to="turtle1/pose"/>
+<param name="turtle_tf_name" type="string" value="turtle1"/>
+</node>
+<node name="turtle2_tf_broadcaster" pkg="study_pkg" type="turtle_tf_broadcaster.py" respawn="false" output="screen">
+<remap from="input_pose" to="turtle2/pose"/>
+<param name="turtle_tf_name" type="string" value="turtle2"/>
+</node>
+<node name="turtle_tf_listener" pkg="study_pkg" type="turtle_tf_listener.py" respawn="false" output="screen"/>
+<node name="rviz" pkg="rviz" type="rviz" />
+</launch>

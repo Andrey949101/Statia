@@ -1,0 +1,10 @@
+<launch>
+    <arg name="new_topic_name" default="new_chatter" />
+        <arg name="hoge" value="$(arg new_topic_name)"/>
+        <node name="service" pkg="study_pkg" type="poly_service.py" output="screen">
+           <remap from="my_topic" to="my_topic"/>
+        </node>
+        <node name="klient" pkg="study_pkg" type="poly_klient.py" output="screen">
+            <remap from="my_topic" to="my_topic"/>
+        </node>
+</launch>

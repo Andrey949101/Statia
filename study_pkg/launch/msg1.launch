@@ -1,0 +1,8 @@
+<launch>
+        <node name="receiver" pkg="study_pkg" type="listenermsg.py" output="screen">
+           <remap from="my_topic" to="my_topic"/>
+        </node>
+        <node name="sender" pkg="study_pkg" type="talkermsg.py" output="screen">
+            <remap from="my_topic" to="my_topic"/>
+        </node>
+</launch>

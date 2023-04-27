@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Запуск tb3_gz_mb_localization.launch -->
+    <include file="$(find study_pkg)/launch/tb3_gz_mb_localization.launch" />
+
+    <!--Запуск rviz_localization_mb_view.launch -->
+    <include file="$(find study_pkg)/launch/rviz_localization_mb_view.launch" />
+
+    <!-- Запуск control_link.py -->
+    <node name="control_link" pkg="study_pkg" type="control_link.py" output="screen" />
+
+    <!-- Запуск ground_truth_listener.py -->
+    <node name="ground_truth_listener" pkg="study_pkg" type="ground_truth_listener.py" output="screen" />
+
+</launch>

@@ -1,0 +1,10 @@
+<launch>
+    <arg name="hoge"/> 
+    <param name="param" value="$(arg hoge)"/>
+    <node name="listener" pkg="study_pkg" type="listener_cpp" output="screen">
+        <remap from="cpp_chatter" to="my_topic"/>
+    </node>
+    <node name="talker" pkg="study_pkg" type="talker_cpp" output="screen">
+        <remap from="cpp_chatter" to="$(arg hoge)"/>
+    </node>
+</launch>
