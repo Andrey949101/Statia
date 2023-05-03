@@ -10,7 +10,7 @@
   <param name="model" value="$(arg model)"/>
 
   <!-- Добавим аргумент, который позволит включать/выключать отображение окна Gazebo при запуске/использовании скрипта -->
-  <arg name="gz_gui" default="true"/>
+  <arg name="gz_gui" default="false"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <!-- Да, описание мира все таки возьмем из пакета =) -->

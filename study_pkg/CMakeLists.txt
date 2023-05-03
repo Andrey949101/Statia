@@ -10,13 +10,6 @@ project(study_pkg)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  std_msgs
-  message_generation
-  tf
-  turtlesim
-  actionlib_msgs
-  actionlib
-  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -46,39 +39,38 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add "message_generation" and every package in MSG_DEP_SET to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
-##   catkin_package(CATKIN_DEPENDS message_runtime ...)
+##     catkin_package(CATKIN_DEPENDS ...)
 ##   * uncomment the add_*_files sections below as needed
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-   FILES
-   control.msg
+# add_message_files(
+#   FILES
+#   Message1.msg
 #   Message2.msg
- )
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-     FILES
-     Poly.srv
+# add_service_files(
+#   FILES
+#   Service1.srv
 #   Service2.srv
-)
+# )
 
 ## Generate actions in the 'action' folder
- add_action_files(
-   FILES
-  Learning.action
+# add_action_files(
+#   FILES
+#   Action1.action
 #   Action2.action
- )
+# )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs  
-   actionlib_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -112,22 +104,14 @@ add_service_files(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES study_pkg
-   CATKIN_DEPENDS message_runtime rospy roscpp
+#  CATKIN_DEPENDS roscpp rospy
+#  DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
-#set(TALKER_NODE_NAME talker_cpp)
-#set(TALKER_NODE_SRC  src/talker.cpp)
-#add_executable(${TALKER_NODE_NAME} ${TALKER_NODE_SRC})
-#add_dependencies(${TALKER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(${TALKER_NODE_NAME} ${catkin_LIBRARIES} )
-#set(LISTENER_NODE_NAME listener_cpp)
-#set(LISTENER_NODE_SRC  src/listener.cpp)
-#add_executable(${LISTENER_NODE_NAME} ${LISTENER_NODE_SRC})
-#add_dependencies(${LISTENER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(${LISTENER_NODE_NAME} ${catkin_LIBRARIES} )
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(

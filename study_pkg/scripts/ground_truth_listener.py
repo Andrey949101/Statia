@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped
@@ -36,7 +36,7 @@ def listener():
 
     # создаем файл position.txt и записываем заголовок
     workspace_path = "catkin_ws" #os.environ['CATKIN_WORKSPACE']
-    file_path = '/home/ubuntupc/catkin_ws/src/filesposition/TEBDiff.txt'
+    file_path = '/home/andrey/catkin_ws/src/Statia/filesposition/NewFile.txt'
     with open(file_path, 'w') as file:
         file.write("x,y\n")
 
