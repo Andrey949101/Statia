@@ -1,0 +1,6 @@
+<launch>
+    <node name="TrafficLightSender" pkg="study_pkg" type="PublisherTrafficLight.py" output="screen">
+    </node>
+    <node name="TEBSvetofor" pkg="study_pkg" type="TEBSvetofor.py">
+    </node>
+</launch>
