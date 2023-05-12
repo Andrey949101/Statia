@@ -187,41 +187,41 @@ def callback(msg):
         client = Client("/move_base/DWAPlannerROS/")
         client.update_configuration({'max_vel_x': 0.0})
         client.update_configuration({'min_vel_x': 0.0})
-        exit()
-    else:
+        sleep(10)
         client = Client("/move_base/DWAPlannerROS/")
         client.update_configuration({'max_vel_x': 0.26})
         client.update_configuration({'min_vel_x': -0.26})
+        exit()
     
     value = 100
 
     if msg.data[0]==411 and msg.data[1]<=50:
         costmap_editor.edit_map411(value)
-        sleep(90)
+        sleep(10)
         value=-1
         costmap_editor.edit_map411(value)
         exit()
     elif msg.data[0]==412 and msg.data[1]<=50:
         costmap_editor.edit_map412(value)
-        sleep(90)
+        sleep(10)
         value=-1
         costmap_editor.edit_map412(value)
         exit()
     elif msg.data[0]==413 and msg.data[1]<=50:
         costmap_editor.edit_map413(value)
-        sleep(90)
+        sleep(10)
         value=-1
         costmap_editor.edit_map413(value)
         exit()
     elif msg.data[0]==414 and msg.data[1]<=50:
         costmap_editor.edit_map414(value)
-        sleep(90)
+        sleep(10)
         value=-1
         costmap_editor.edit_map414(value)
         exit()
     elif msg.data[0]==415 and msg.data[1]<=50:
         costmap_editor.edit_map415(value)
-        sleep(90)
+        sleep(10)
         value=-1
         costmap_editor.edit_map415(value)
         exit()
