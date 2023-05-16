@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-# msg1 - дорожный знак
-# msg2 - расстояние до дорожного знака в сантиметрах
-# msg1=31 - стоп
-# msg1=412 - только направо
-# msg1=411 - только прямо
-# msg1=413 - только налево
-# msg1=414 - прямо и направо
-# msg1=415 - прямо и налево
+# # msg1 - дорожный знак
+# # msg2 - расстояние до дорожного знака в сантиметрах
+# # msg1=31 - стоп
+# # msg1=412 - только направо
+# # msg1=411 - только прямо
+# # msg1=413 - только налево
+# # msg1=414 - прямо и направо
+# # msg1=415 - прямо и налево
+
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
@@ -17,10 +18,15 @@ from std_msgs.msg import Int64
 from std_msgs.msg import Int64MultiArray
 from dynamic_reconfigure.client import Client
 from time import sleep
+import math
+
+RoadSign=0
+distance=0
+angle=90
 
 class CostmapEditor:
     def __init__(self):
-        rospy.init_node('costmap_editor', anonymous=True)
+        rospy.init_node('costmap_editor')
         rospy.Subscriber('/map', OccupancyGrid, self.costmap_callback)
         rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.pose_callback)
         self.map_pub = rospy.Publisher('/map', OccupancyGrid, queue_size=10)
@@ -55,7 +61,47 @@ class CostmapEditor:
         index = y * map_width + x
         return index
 
-    def edit_map411(self, value):
+    def left(self,value, angle):
+        if self.robot_pose is None:
+            rospy.logwarn('Robot pose is not available yet.')
+            return
+
+        x = self.robot_pose.position.x
+        y = self.robot_pose.position.y
+
+        min_x = x - 0.51
+        min_y = y + 0.5
+        max_x = x - 0.5
+        max_y = y + 0.51
+        min_x_prev=min_x
+        min_y_prev=min_y
+        max_x_prev=max_x
+        max_y_prev=max_y
+        print("Left")
+        for i in range(150):
+            coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
+            indices = self.coords_to_indices(coords)
+
+            new_map = OccupancyGrid()
+            new_map.header.stamp = rospy.Time.now()
+            new_map.header.frame_id = self.map.header.frame_id
+            new_map.info = self.map.info
+            new_map.data = list(self.map.data)
+            for index in indices:
+                new_map.data[index] = value
+                min_x = min_x_prev + 0.01*math.cos(math.radians(angle))
+                min_y = min_y_prev + 0.01*math.sin(math.radians(angle))
+                max_x = max_x_prev + 0.01*math.cos(math.radians(angle))
+                max_y = max_y_prev + 0.01*math.sin(math.radians(angle))
+            self.map_pub.publish(new_map)
+            min_x_prev=min_x
+            min_y_prev=min_y
+            max_x_prev=max_x
+            max_y_prev=max_y
+        print("done")
+        exit()
+
+    def right(self, value, angle):
         if self.robot_pose is None:
             rospy.logwarn('Robot pose is not available yet.')
             return
@@ -64,23 +110,39 @@ class CostmapEditor:
         y = self.robot_pose.position.y
 
         min_x = x + 0.5
-        min_y = y + 0.3
-        max_x = x + 1
-        max_y = y + 1
+        min_y = y + 0.5
+        max_x = x + 0.51
+        max_y = y + 0.51
+        min_x_prev=min_x
+        min_y_prev=min_y
+        max_x_prev=max_x
+        max_y_prev=max_y
+        print("Right")
+        for i in range(150):
+            coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
+            indices = self.coords_to_indices(coords)
 
-        coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
-        indices = self.coords_to_indices(coords)
+            new_map = OccupancyGrid()
+            new_map.header.stamp = rospy.Time.now()
+            new_map.header.frame_id = self.map.header.frame_id
+            new_map.info = self.map.info
+            new_map.data = list(self.map.data)
+            for index in indices:
+                new_map.data[index] = value
+                min_x = min_x_prev + 0.01*math.cos(math.radians(angle))
+                min_y = min_y_prev + 0.01*math.sin(math.radians(angle))
+                max_x = max_x_prev + 0.01*math.cos(math.radians(angle))
+                max_y = max_y_prev + 0.01*math.sin(math.radians(angle))
+            self.map_pub.publish(new_map)
+            min_x_prev=min_x
+            min_y_prev=min_y
+            max_x_prev=max_x
+            max_y_prev=max_y
+        print("done")
 
-        new_map = OccupancyGrid()
-        new_map.header.stamp = rospy.Time.now()
-        new_map.header.frame_id = self.map.header.frame_id
-        new_map.info = self.map.info
-        new_map.data = list(self.map.data)
-        for index in indices:
-            new_map.data[index] = value
-        self.map_pub.publish(new_map)
 
-    def edit_map412(self, value):
+    def front(self,value,angle):
+        angle_front=angle+90
         if self.robot_pose is None:
             rospy.logwarn('Robot pose is not available yet.')
             return
@@ -88,102 +150,51 @@ class CostmapEditor:
         x = self.robot_pose.position.x
         y = self.robot_pose.position.y
 
-        min_x = x 
-        min_y = y 
-        max_x = x + 0.5
-        max_y = y + 0.5
+        min_x = x + 0.5 + 1.5*math.cos(math.radians(angle))
+        min_y = y + 0.5 + 1.5*math.sin(math.radians(angle))
+        max_x = x + 0.51 + 1.5*math.cos(math.radians(angle))
+        max_y = y + 0.51 + 1.5*math.sin(math.radians(angle))
+        min_x_prev=min_x
+        min_y_prev=min_y
+        max_x_prev=max_x
+        max_y_prev=max_y
+        print("Front")
+        for i in range(150):
+            coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
+            indices = self.coords_to_indices(coords)
 
-        coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
-        indices = self.coords_to_indices(coords)
+            new_map = OccupancyGrid()
+            new_map.header.stamp = rospy.Time.now()
+            new_map.header.frame_id = self.map.header.frame_id
+            new_map.info = self.map.info
+            new_map.data = list(self.map.data)
+            for index in indices:
+                new_map.data[index] = value
+                min_x = min_x_prev + 0.01*math.cos(math.radians(angle_front))
+                min_y = min_y_prev + 0.01*math.sin(math.radians(angle_front))
+                max_x = max_x_prev + 0.01*math.cos(math.radians(angle_front))
+                max_y = max_y_prev + 0.01*math.sin(math.radians(angle_front))
+            self.map_pub.publish(new_map)
+            min_x_prev=min_x
+            min_y_prev=min_y
+            max_x_prev=max_x
+            max_y_prev=max_y
+        print("done")
+        exit()
 
-        new_map = OccupancyGrid()
-        new_map.header.stamp = rospy.Time.now()
-        new_map.header.frame_id = self.map.header.frame_id
-        new_map.info = self.map.info
-        new_map.data = list(self.map.data)
-        for index in indices:
-            new_map.data[index] = value
-        self.map_pub.publish(new_map)
-
-    def edit_map413(self, value):
-        if self.robot_pose is None:
-            rospy.logwarn('Robot pose is not available yet.')
-            return
-
-        x = self.robot_pose.position.x
-        y = self.robot_pose.position.y
-
-        min_x = x 
-        min_y = y 
-        max_x = x + 0.5
-        max_y = y + 0.5
-
-        coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
-        indices = self.coords_to_indices(coords)
-
-        new_map = OccupancyGrid()
-        new_map.header.stamp = rospy.Time.now()
-        new_map.header.frame_id = self.map.header.frame_id
-        new_map.info = self.map.info
-        new_map.data = list(self.map.data)
-        for index in indices:
-            new_map.data[index] = value
-        self.map_pub.publish(new_map)
-
-    def edit_map414(self, value):
-        if self.robot_pose is None:
-            rospy.logwarn('Robot pose is not available yet.')
-            return
-
-        x = self.robot_pose.position.x
-        y = self.robot_pose.position.y
-
-        min_x = x 
-        min_y = y 
-        max_x = x + 0.5
-        max_y = y + 0.5
-
-        coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
-        indices = self.coords_to_indices(coords)
-
-        new_map = OccupancyGrid()
-        new_map.header.stamp = rospy.Time.now()
-        new_map.header.frame_id = self.map.header.frame_id
-        new_map.info = self.map.info
-        new_map.data = list(self.map.data)
-        for index in indices:
-            new_map.data[index] = value
-        self.map_pub.publish(new_map)
-
-    def edit_map415(self, value):
-        if self.robot_pose is None:
-            rospy.logwarn('Robot pose is not available yet.')
-            return
-
-        x = self.robot_pose.position.x
-        y = self.robot_pose.position.y
-
-        min_x = x 
-        min_y = y 
-        max_x = x + 0.5
-        max_y = y + 0.5
-
-        coords = self.indices_to_coords(min_x, min_y, max_x, max_y)
-        indices = self.coords_to_indices(coords)
-
-        new_map = OccupancyGrid()
-        new_map.header.stamp = rospy.Time.now()
-        new_map.header.frame_id = self.map.header.frame_id
-        new_map.info = self.map.info
-        new_map.data = list(self.map.data)
-        for index in indices:
-            new_map.data[index] = value
-        self.map_pub.publish(new_map)
- 
-
-def callback(msg):
-    rospy.loginfo("RoadSign %d; Lenght %d", msg.data[0], msg.data[1])
-    if msg.data[0]==31 and msg.data[1]<=50:
+def callback1(msg):
+    global RoadSign
+    RoadSign = msg.data[0]
+    global distance
+    distance = msg.data[1]
+    global angle
+    angle = 0
+    sopostavlenie()
+    
+def sopostavlenie():
+    global RoadSign, distance, angle
+    
+    if RoadSign==31 and distance<=50:
         client = Client("/move_base/DWAPlannerROS/")
         client.update_configuration({'max_vel_x': 0.0})
         client.update_configuration({'min_vel_x': 0.0})
@@ -193,41 +204,27 @@ def callback(msg):
         client.update_configuration({'min_vel_x': -0.26})
         exit()
     
-    value = 100
+    if RoadSign==411 and distance<=50:
+        value=100
+        costmap_editor.left(value, angle)
+        sleep(10)
+        value=-1
+        costmap_editor.left(value,angle)
+        exit()
 
-    if msg.data[0]==411 and msg.data[1]<=50:
-        costmap_editor.edit_map411(value)
+    if RoadSign==415 and distance<=50:
+        value = 100
+        costmap_editor.right(value,angle)
+        print("продолжаем")
+        costmap_editor.front(value,angle)
         sleep(10)
         value=-1
-        costmap_editor.edit_map411(value)
-        exit()
-    elif msg.data[0]==412 and msg.data[1]<=50:
-        costmap_editor.edit_map412(value)
-        sleep(10)
-        value=-1
-        costmap_editor.edit_map412(value)
-        exit()
-    elif msg.data[0]==413 and msg.data[1]<=50:
-        costmap_editor.edit_map413(value)
-        sleep(10)
-        value=-1
-        costmap_editor.edit_map413(value)
-        exit()
-    elif msg.data[0]==414 and msg.data[1]<=50:
-        costmap_editor.edit_map414(value)
-        sleep(10)
-        value=-1
-        costmap_editor.edit_map414(value)
-        exit()
-    elif msg.data[0]==415 and msg.data[1]<=50:
-        costmap_editor.edit_map415(value)
-        sleep(10)
-        value=-1
-        costmap_editor.edit_map415(value)
+        costmap_editor.right(value,angle)
+        costmap_editor.front(value,angle)
         exit()
 
 if __name__ == '__main__':
     costmap_editor = CostmapEditor()
     while not rospy.is_shutdown():
-        rospy.Subscriber('RoadSign', Int64MultiArray, callback, queue_size=10)
+        rospy.Subscriber('RoadSign', Int64MultiArray, callback1, queue_size=10)
         rospy.spin()
